@@ -15,10 +15,10 @@
  * This hardware interface can communicate with philips Hue lights. The config.json file specifies the connection information
  * for the lamps in your setup. A light in this config file has the following attributes:
  * {
- * "host":"localhost",                  // ip or hostname of the philips Hue bridge
- * "url":"/api/newdeveloper/lights/1",  // base path of the light on the bridge, replace newdeveloper with a valid username (see http://www.developers.meethue.com/documentation/getting-started)
- * "id":"Light1",                       // the name of the RealityInterface
- * "port":"80"                          // port the hue bridge is listening on (80 on all bridges by default)
+ * 'host':'localhost',                  // ip or hostname of the philips Hue bridge
+ * 'url':'/api/newdeveloper/lights/1',  // base path of the light on the bridge, replace newdeveloper with a valid username (see http://www.developers.meethue.com/documentation/getting-started)
+ * 'id':'Light1',                       // the name of the RealityInterface
+ * 'port':'80'                          // port the hue bridge is listening on (80 on all bridges by default)
  *
  * }
  *
@@ -33,12 +33,10 @@ var server = require('@libraries/hardwareInterfaces');
 
 var settings = server.loadHardwareInterface(__dirname);
 
-exports.enabled = false;
+exports.enabled = settings('enabled');
 exports.configurable = true; // can be turned on/off/adjusted from the web frontend
 
 if (exports.enabled) {
-
-
     var fs = require('fs');
     var http = require('http');
     var _ = require('lodash');
@@ -46,23 +44,16 @@ if (exports.enabled) {
 
 
 
-    var lights = JSON.parse(fs.readFileSync(__dirname + "/config.json", "utf8"));
-
-    //function Light() {
-    //    this.id;
-    //    this.host;
-    //    this.url;
-    //    this.port;
-    //}
+    var lights = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'));
 
     /**
-     * @desc setup() runs once, adds and clears the IO points
-     **/
+     * runs once, adds and clears the IO points
+     */
     function setup() {
         //load the config file
-        //lights = JSON.parse(fs.readFileSync(__dirname + "/config.json", "utf8"));
+        //lights = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8'));
 
-        console.log("setup philipsHue");
+        console.log('setup philipsHue');
         for (var key in lights) {
             lights[key].switch = undefined;
             lights[key].bri = undefined;
@@ -75,7 +66,7 @@ if (exports.enabled) {
 
 
     /**
-         * @desc getLightState() communicates with the philipsHue bridge and checks the state of the light
+     * Communicates with the philipsHue bridge and checks the state of the light
      * @param {Object} light the light to check
      * @param {function} callback function to run when the response has arrived
      **/
@@ -103,55 +94,53 @@ if (exports.enabled) {
                     console.error('Philips Hue Error', str);
                     return;
                 }
+                const frameId = light.id + 'frame';
                 if (state.on != light.switch) {
                     light.switch = state.on;
                     if (state.on) {
-                        callback(light.id, "switch", 1, "d");
+                        callback(light.id, frameId, 'switch', 1, 'd');
                     } else {
-                        callback(light.id, "switch", 0, "d");
+                        callback(light.id, frameId, 'switch', 0, 'd');
                     }
 
                 }
 
                 if (state.bri != light.bri) {
                     light.bri = state.bri; // brightness is a value between 1 and 254
-                    callback(light.id, "brightness", (state.bri - 1) / 253, "f");
+                    callback(light.id, frameId, 'brightness', (state.bri - 1) / 253, 'f');
                 }
 
                 if (light.colorful) {
                     if (state.hue != light.hue) {
                         light.hue = state.hue; // hue is a value between 0 and 65535
-                        callback(light.id, "hue", state.hue / 65535, "f"); // map hue to [0,1]
+                        callback(light.id, frameId, 'hue', state.hue / 65535, 'f'); // map hue to [0,1]
                     }
 
                     if (state.sat != light.sat) {
                         light.sat = state.sat;
-                        callback(light.id, "saturation", state.sat / 254, "f");
+                        callback(light.id, frameId, 'saturation', state.sat / 254, 'f');
                     }
                 }
 
             });
-        }
-
-
+        };
 
         var req = http.request(options, callbackHttp);
         req.on('error', function (e) {
             console.log('GetLightState HTTP error', e.message);
         });
         req.end();
-
     }
 
 
     /**
-     * @desc writeSwitchState() turns the specified light on or off
-         * @param {float} state turns the light on if > 0.5, turns it off otherwise
-     **/
+     * turns the specified light on or off
+     * @param {number} state turns the light on if > 0.5, turns it off otherwise
+     */
     function writeSwitchState(light, state) {
         var options = {
             host: light.host,
-            path: light.url + "/state",
+            path: light.url + '/state',
             port: light.port,
             method: 'PUT',
         };
@@ -162,13 +151,9 @@ if (exports.enabled) {
             console.log('writeSwitchState HTTP error', e.message);
         });
 
-        if (state < 0.5) {
-            req.write('{"on":false}');
-        } else {
-            req.write('{"on":true}');
-        }
-
-
+        req.write(JSON.stringify({
+            on: state > 0.5
+        }));
 
         req.end();
 
@@ -178,7 +163,7 @@ if (exports.enabled) {
 
     /**
          * @desc writeBrightness() Sets the brightness of the specified light
-         * @param {float} bri is the brightness in the range [0,1]
+         * @param {number} bri is the brightness in the range [0,1]
      **/
 
     function writeBrightness(light, bri) {
@@ -188,7 +173,7 @@ if (exports.enabled) {
 
         var options = {
             hostname: light.host,
-            path: light.url + "/state",
+            path: light.url + '/state',
             port: light.port,
             method: 'PUT',
         };
@@ -206,20 +191,22 @@ if (exports.enabled) {
             }, 100);
         });
 
-        req.write('{"bri":' + _.floor(bri * 253 + 1) + '}');
+        req.write(JSON.stringify({
+            bri: Math.floor(bri * 253 + 1)
+        }));
 
         req.end();
     }
 
 
     /**
-     * @desc writeSaturation() sets the saturation for the specified light
-     * @param {float} sat is the saturatin in the range [0,1]
-     **/
+     * sets the saturation for the specified light
+     * @param {number} sat is the saturation in the range [0,1]
+     */
     function writeSaturation(light, sat) {
         var options = {
             hostname: light.host,
-            path: light.url + "/state",
+            path: light.url + '/state',
             port: light.port,
             method: 'PUT',
         };
@@ -228,19 +215,21 @@ if (exports.enabled) {
         req.on('error', function (e) {
             console.log('writeSaturation HTTP error', e.message);
         });
-        req.write('{"sat":' + _.floor(sat * 254) + '}');
+        req.write(JSON.stringify({
+            sat: Math.floor(sat * 254),
+        }));
         req.end();
     }
 
 
     /**
-     * @desc writeHue() sets the hue for the specified light
-     * @param {integer} hue is the hue in the range [0,1]
-     **/
+     * sets the hue for the specified light
+     * @param {number} hue is the hue in the range [0,1]
+     */
     function writeHue(light, hue) {
         var options = {
             hostname: light.host,
-            path: light.url + "/state",
+            path: light.url + '/state',
             port: light.port,
             method: 'PUT',
         };
@@ -249,48 +238,57 @@ if (exports.enabled) {
         req.on('error', function (e) {
             console.log('writeHue HTTP error', e.message);
         });
-        req.write('{"hue":' + _.floor(hue * 65535) + '}');
+        req.write(JSON.stringify({
+            hue: Math.floor(hue * 65535),
+        }));
         req.end();
     }
 
     /**
-     * @desc philipsHueServer() The main function, runs the setup and then periodically checks whether the lights are on.
-     **/
+     * The main function, runs the setup and then periodically checks whether
+     * the lights are on.
+     */
     function philipsHueServer() {
-        console.log("philipsHue starting philipsHue");
+        console.log('philipsHue starting philipsHue');
         setup();
 
 
-        //TODO poll more often in productive environment
+        // TODO poll more often in production environment
         for (var key in lights) {
             setInterval(function (light) {
                 getLightState(light, server.write);
             }, 700 + _.random(-100, 100), lights[key]);
         }
-
     }
 
+    /**
+     * @param {string} lightId
+     * @param {Function} writeFn
+     * @return {Function} read listener callback that invokes writeFn
+     */
     function onRead(lightId, writeFn) {
         return function(data) {
             writeFn(lights[lightId], data.value);
         };
     }
 
+    // Set up server-side frames, nodes, and listeners for all known lights
     for (var lightId in lights) {
-        server.addNode(lightId, "switch", "node");
-        server.addNode(lightId, "brightness", "node");
+        const frameId = lightId + 'frame';
+        server.addNode(lightId, frameId, 'switch', 'node');
+        server.addNode(lightId, frameId, 'brightness', 'node');
         if (lights[lightId].colorful) {
-            server.addNode(lightId, "hue", "node");
-            server.addNode(lightId, "saturation", "node");
+            server.addNode(lightId, frameId, 'hue', 'node');
+            server.addNode(lightId, frameId, 'saturation', 'node');
         }
         server.activate(lightId);
 
-        server.addReadListener(lightId, 'switch', onRead(lightId, writeSwitchState));
-        server.addReadListener(lightId, 'brightness', onRead(lightId, writeBrightness));
+        server.addReadListener(lightId, frameId, 'switch', onRead(lightId, writeSwitchState));
+        server.addReadListener(lightId, frameId, 'brightness', onRead(lightId, writeBrightness));
 
         if (lights[lightId].colorful) {
-            server.addReadListener(lightId, 'hue', onRead(lightId, writeHue));
-            server.addReadListener(lightId, 'saturation', onRead(lightId, writeSaturation));
+            server.addReadListener(lightId, frameId, 'hue', onRead(lightId, writeHue));
+            server.addReadListener(lightId, frameId, 'saturation', onRead(lightId, writeSaturation));
         }
     }
 
