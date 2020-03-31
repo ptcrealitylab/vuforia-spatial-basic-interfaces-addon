@@ -45,13 +45,20 @@
 var server = require('@libraries/hardwareInterfaces');
 var settings = server.loadHardwareInterface(__dirname);
 
-exports.enabled = false;
+exports.enabled = settings('enabled');
 exports.configurable = true; // can be turned on/off/adjusted from the web frontend
 
 if (exports.enabled) {
-    var _ = require('lodash');
-    var serialport = require("serialport");
 
+    exports.settings = {
+        
+    };
+    
+    
+    var _ = require('lodash');
+    
+    var serialport = require("serialport");
+    
     const serialBaudRate = 115200; // baud rate for connection to arudino
 
     // change this to what ever is your Arudino Serial Port
@@ -88,7 +95,7 @@ if (exports.enabled) {
             if(ports[i].manufacturer){
                  if(ports[i].manufacturer.includes("Arduino")) {
                      serialPort = new SerialPort(ports[i].comName, {
-                         baudRate: 19200
+                         baudRate: 115200
                      });
                      serialPort.on('error', function (err) {
                          console.error("Serial port error", err);
@@ -232,10 +239,6 @@ if (exports.enabled) {
                             }.bind(data,thisObjectID,thisObjectID+pos,"node"));
 
                         }
-
-
-
-
 
                         dataSwitch = 0;
                         break;

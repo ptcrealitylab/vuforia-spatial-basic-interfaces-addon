@@ -1,0 +1,13 @@
+{
+  "name": "vuforiaSpatialExperiments",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Valentin Heun <heun@ptc.cpm>)",
+  "license": "MPL 2.0",
+  "dependencies": {
+    "serialport": "^8.0.7"
+  }
+}

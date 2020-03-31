@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIR Configurator</title>
+    <script src="../libraries/gui/config.js"></script>
+    <style>
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            height: 32px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 32px;
+            background-color: none;
+            border: 2px solid rgb(242,22,121);
+            line-height: 35px;
+            text-align: center;
+            color: rgb(242,22,121);
+        }
+        
+        .checkmark:hover {
+            cursor: pointer;
+        }
+
+        .switch:hover input ~ .checkmark {
+            background-color: rgb(10,10,10);
+        }
+
+        /* When the checkbox is checked, add a blue background */
+        .switch input:checked ~ .checkmark {
+            border: 2px solid rgb(41,253,47);
+            color: rgb(41,253,47);
+        }
+        
+        html {
+            background-color: rgb(34,34,34);
+            font-family: myriadPro, Helvetica Neue, Helvetica, Arial, sans-serif;;
+            font-size: 12pt;
+            line-height: 1.3;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            color: white;
+        }
+
+        #title {
+            color: rgb(45,255,255);
+            font-family: "Futura", Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-weight: medium;
+            font-size: 28pt;
+        }
+
+
+        #contents {
+            color: rgb(255,255,255);
+        }
+
+        .button {
+            padding: 0px;
+            margin: 0px;
+            width: 104px;
+            height: 32px;
+            line-height: 35px;
+            text-align: center;
+            vertical-align: middle;
+            border: 2px solid white;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .space {
+            padding: 0;
+            margin: 0;
+            width: 8px;
+            height: 36px;
+            line-height: 32px;
+            text-align: center;
+            vertical-align: middle;
+            margin-top: 10px;
+            display: inline-block;
+            color: rgb(255,255,255);
+            background-color: rgba(255,255,255,0.15);
+            z-index: -1;
+        }
+
+        .smallSpace {
+            width: 1px;
+            background-color: transparent;
+        }
+
+        .clickable:hover {
+            opacity: 0.75;
+            cursor: pointer;
+        }
+
+        .green {
+            color: rgb(41,253,47);
+            border: 2px solid rgb(41,253,47);
+            background-color: rgba(41,253,47,0.05);
+        }
+
+        .red {
+            color: rgb(242,22,121);
+            border: 2px solid rgb(242,22,121);
+            background-color: rgba(242,22,121,0.05);
+        }
+
+        .blue {
+            color: rgb(45,255,255);
+            border: 2px solid rgb(45,255,255);
+            background-color: rgba(45,255,255,0.05);
+        }
+
+        .purple {
+            color: rgb(210,113,255);
+            border: 2px solid rgb(210,113,255);
+            background-color: rgba(210,113,255,0.05);
+        }
+
+        .yellow {
+            color: rgb(255,255,45);
+            border: 2px solid rgb(255,255,45);
+            background-color: rgba(255,255,45,0.05);
+        }
+
+        .hidden {
+            visibility: hidden;
+            color: rgba(255,255,255,0.0);;
+            background-color: rgba(255,255,255,0.0);
+        }
+
+        .white {
+            color: rgb(255,255,255);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .zero {
+            margin-left: -12px;
+            width: 0;
+        }
+
+        .half {
+            width: 46px;
+        }
+
+        .halfPlus {
+            width: 49px;
+        }
+
+        .one {
+            width: 104px;
+        }
+
+        .two {
+            width: 220px;
+        }
+
+        .twoAndHalf{
+            width: 278px;
+        }
+
+        .three {
+            width: 336px;
+        }
+
+        .four {
+            width: 452px;
+        }
+
+        .fourAndHalf {
+            width: 514px;
+        }
+
+        .five {
+            width: 568px;
+        }
+
+        .fiveAndHalf {
+            width: 626px;
+        }
+
+        .textfield {
+            cursor: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+            font-family: myriadPro, Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 12pt;
+            white-space: nowrap;
+        }
+
+        .setting {
+            margin-bottom: 20px;
+        }
+
+        #introduction {
+            margin-bottom: 42px;
+        }
+
+        a {
+            color: rgba(45,255,255, 0.5);
+        }
+
+        .displayNone {
+            display: none;
+        }
+
+        .inactive {
+            opacity: 0.25;
+        }
+
+        .label {
+            display: inline-block;
+            line-height: 35px;
+            height: 35px;
+            vertical-align: middle;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="introduction">
+    This is the hardware interface to connect to your Arduino board.<br><br>
+    To use your Arduino with the Spatial Toolbox, you need to navigate within your Arduino IDE to the following menu:<br>
+    "Sketch > Inlude Library > Add .zip Library..."<br><br>
+
+    With the resulting dialog, open the following Zip File:<br> vuforia-spatial-basic-interfaces-addon/interfaces/arduinoUno/Vuforia-Spatial-Arduino-Library.zip
+</div>
+
+<div id="contents">
+    <!--Contents get deleted and recreated in the realityServer.render()-->
+</div>
+
+<script>
+
+
+</script>
+
+</body>
+</html>
