@@ -328,12 +328,14 @@ if (exports.enabled) {
 
         let localBridgeIP = '';
         let username = '';
+        let settingsNeedUpdate = false;
         if (settings('localBridgeIP')) {
             localBridgeIP = settings('localBridgeIP');
         } else {
             const bridgeIP = await getLocalBridgeIP();
             localBridgeIP = bridgeIP;
             exports.settings.localBridgeIP.value = localBridgeIP;
+            settingsNeedUpdate = true;
         }
 
         if (settings('username')) {
@@ -341,6 +343,15 @@ if (exports.enabled) {
         } else {
             username = await getUsername(localBridgeIP);
             exports.settings.username.value = username;
+            settingsNeedUpdate = true;
+        }
+
+        if (settingsNeedUpdate) {
+            server.setHardwareInterfaceSettings('philipsHue', exports.settings, null, function(successful, error) {
+                if (error) {
+                    console.log('error persisting settings', error);
+                }
+            });
         }
 
         lights = await getLocalLights(localBridgeIP, username);
