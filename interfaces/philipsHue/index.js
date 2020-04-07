@@ -312,6 +312,11 @@ if (exports.enabled) {
         settings = server.loadHardwareInterface(__dirname);
 
         exports.settings = {
+            status: {
+                type: 'status',
+                connection: 'DISCOVERING HUE BRIDGE',
+                lights: 0,
+            },
             localBridgeIP: {
                 value: settings('localBridgeIP'),
                 type: 'text',
@@ -333,6 +338,7 @@ if (exports.enabled) {
             localBridgeIP = settings('localBridgeIP');
         } else {
             const bridgeIP = await getLocalBridgeIP();
+            exports.settings.status.connection = 'PAIRING WITH HUE BRIDGE';
             localBridgeIP = bridgeIP;
             exports.settings.localBridgeIP.value = localBridgeIP;
             settingsNeedUpdate = true;
@@ -342,6 +348,7 @@ if (exports.enabled) {
             username = settings('username');
         } else {
             username = await getUsername(localBridgeIP);
+            exports.settings.status.connection = 'PAIRED WITH HUE BRIDGE';
             exports.settings.username.value = username;
             settingsNeedUpdate = true;
         }
@@ -357,6 +364,8 @@ if (exports.enabled) {
         lights = await getLocalLights(localBridgeIP, username);
 
         console.log('found lights', lights);
+        exports.settings.status.connection = 'PAIRED WITH HUE BRIDGE';
+        exports.settings.status.lights = Object.keys(lights).length;
 
         // Set up server-side frames, nodes, and listeners for all known lights
         for (var lightId in lights) {
