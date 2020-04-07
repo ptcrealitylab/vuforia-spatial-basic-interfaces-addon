@@ -52,15 +52,19 @@ function sleep(ms) {
 }
 
 async function getUsername(localBridgeIP) {
-    let retries = 30;
-    while (retries > 0) {
-        retries -= 1;
-        console.log('press the pair button on the Hue Hub please');
+    let retries = 0;
+    // Just retry forever
+    while (true) { // eslint-disable-line
+        retries += 1;
         let username = await getUsernameOnce(localBridgeIP);
         if (username) {
             return username;
         }
-        await sleep(2000);
+        if (retries < 200) {
+            await sleep(2000);
+        } else {
+            await sleep(10000);
+        }
     }
 }
 
