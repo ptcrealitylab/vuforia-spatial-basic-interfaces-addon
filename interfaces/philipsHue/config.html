@@ -296,7 +296,7 @@
                 if (setting.lights > 0) {
                     lights.innerHTML = '';
                 }
-                for (let i = 0 ; i < setting.lights * 3; i++) {
+                for (let i = 0 ; i < setting.lights; i++) {
                     const light = this.templates.light.content.cloneNode(true);
                     light.querySelector('.name').innerText = `Light ${i + 1}`;
                     lights.appendChild(light);
