@@ -21,19 +21,8 @@
             font-size: 28pt;
         }
 
-        #tagsTitle {
-            margin-top: 18px;
-            color: rgb(45,255,255);
-            font-family: "Futura", Helvetica Neue, Helvetica, Arial, sans-serif;
-            font-size: 18pt;
-        }
-
         #contents {
             color: rgb(255,255,255);
-        }
-
-        .tag {
-            margin-bottom: 20px;
         }
 
         .button {
@@ -136,7 +125,7 @@
             width: 220px;
         }
 
-        .twoAndHalf{
+        .twoAndHalf {
             width: 278px;
         }
 
@@ -168,6 +157,7 @@
             font-family: myriadPro, Helvetica Neue, Helvetica, Arial, sans-serif;
             font-size: 12pt;
             white-space: nowrap;
+            overflow: hidden;
         }
 
         .setting {
@@ -175,7 +165,7 @@
         }
 
         #introduction {
-            margin-bottom: 42px;
+            margin-bottom: -1px;
         }
 
         a {
@@ -223,6 +213,20 @@
     </div>
 </template>
 
+<template id="status">
+    <div class="setting">
+        <div class="connection button green four">SEARCHING FOR HUE BRIDGE</div>
+        <div class="lights">
+            <div class="name button yellow two inactive">No Lights Found</div>
+        </div>
+    </div>
+</template>
+
+<template id="light">
+    <div class="name button green one">Light</div>
+    <div style="display:inline-block"></div> <!-- graphic design is my passion -->
+</template>
+
 <body>
 
 <div id="introduction">
@@ -247,8 +251,23 @@
 
     var defaultSettings = null;
 
+    function fetchSettings() {
+        fetch(`/hardwareInterface/${realityServer.hardwareInterfaceName}/settings`).then(res => {
+            return res.json();
+        }).then(settings => {
+            if (JSON.stringify(settings) === JSON.stringify(realityServer.hardwareInterface.settings)) {
+                return;
+            }
+
+            realityServer.hardwareInterface.settings = settings;
+            realityServer.render();
+            setTimeout(fetchSettings, 1000);
+        });
+    }
+
     window.onload = function() {
         init();
+        fetchSettings();
     };
 
     function init() {
@@ -260,24 +279,37 @@
     }
 
     realityServer.render = function() {
-        var settings = realityServer.hardwareInterface.settings;
+        var settings = this.hardwareInterface.settings;
         if (typeof settings === "undefined") {
             return;
         }
 
         console.log('render');
-        realityServer.domObjects.innerHTML = ''; // reset
+        this.domObjects.innerHTML = ''; // reset
 
-        for (let settingsName in settings) {
-            if (settingsName === 'tagsInfo') { continue; } // special settings for this one
-
-            let thisSettings = settings[settingsName];
-            let newElement = this.templates['setting'].content.cloneNode(true);
+        for (const settingsName in settings) {
+            const setting = settings[settingsName];
+            if (setting.type === 'status') {
+                const status = this.templates.status.content.cloneNode(true);
+                status.querySelector('.connection').innerText = setting.connection;
+                const lights = status.querySelector('.lights');
+                if (setting.lights > 0) {
+                    lights.innerHTML = '';
+                }
+                for (let i = 0 ; i < setting.lights * 3; i++) {
+                    const light = this.templates.light.content.cloneNode(true);
+                    light.querySelector('.name').innerText = `Light ${i + 1}`;
+                    lights.appendChild(light);
+                }
+                this.domObjects.appendChild(status);
+                continue;
+            }
+            const newElement = this.templates.setting.content.cloneNode(true);
             newElement.querySelector('.name').innerText = settingsName;
-            newElement.querySelector('.value').innerText = thisSettings.value;
+            newElement.querySelector('.value').innerText = setting.value;
 
-            if (typeof thisSettings.helpText !== 'undefined') {
-                newElement.querySelector('.helpText').innerText = thisSettings.helpText;
+            if (typeof setting.helpText !== 'undefined') {
+                newElement.querySelector('.helpText').innerText = setting.helpText;
             } else {
                 newElement.querySelector('.helpText').remove();
             }
@@ -287,14 +319,14 @@
                 console.log('value of ' + settingsName + ' changed to ' + this.innerText);
 
                 var didChange = false;
-                if (thisSettings.type === 'text') {
-                    if (this.innerText !== thisSettings.value) {
+                if (setting.type === 'text') {
+                    if (this.innerText !== setting.value) {
                         console.log('new text value');
                         didChange = true;
                     }
                 }
-                if (thisSettings.type === 'number') {
-                    if (parseFloat(this.innerText) !== thisSettings.value) {
+                if (setting.type === 'number') {
+                    if (parseFloat(this.innerText) !== setting.value) {
                         console.log('new number value');
                         didChange = true;
                     }
@@ -316,12 +348,12 @@
 
             // implement save button
             newElement.querySelector('.save').addEventListener('click', function() {
-                if (thisSettings.type === 'text') {
-                    thisSettings.value = this.parentElement.parentElement.querySelector('.value').innerText;
-                } else if (thisSettings.type === 'number') {
-                    thisSettings.value = parseFloat(this.parentElement.parentElement.querySelector('.value').innerText);
+                if (setting.type === 'text') {
+                    setting.value = this.parentElement.parentElement.querySelector('.value').innerText;
+                } else if (setting.type === 'number') {
+                    setting.value = parseFloat(this.parentElement.parentElement.querySelector('.value').innerText);
                 }
-                console.log('new settings for ' + settingsName + ' = ' + thisSettings.value);
+                console.log('new settings for ' + settingsName + ' = ' + setting.value);
                 console.log('TODO: write settings to file');
 
                 realityServer.writeHardwareInterfaceSettings(settings, [settingsName] ,function(res) {
