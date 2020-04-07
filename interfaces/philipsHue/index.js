@@ -64,10 +64,15 @@ async function getUsername(localBridgeIP) {
     }
 }
 
+/**
+ * Perform a single pairing attempt with the bridge located at localBridgeIP
+ * Based on my own code from the Mozilla WebThings Philips Hue Adapter
+ * @return {string?} username or undefined if pairing failed
+ */
 async function getUsernameOnce(localBridgeIP) {
     const res = await fetch(`http://${localBridgeIP}/api`, {
         method: 'POST',
-        body: '{"devicetype":"mozilla_gateway#PhilipsHueAdapter"}',
+        body: '{"devicetype":"VuforiaSpatialToolbox#PhilipsHueInterface"}',
     });
     const reply = await res.json();
 
