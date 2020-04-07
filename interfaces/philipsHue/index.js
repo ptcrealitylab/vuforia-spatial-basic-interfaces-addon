@@ -338,7 +338,7 @@ if (exports.enabled) {
             localBridgeIP = settings('localBridgeIP');
         } else {
             const bridgeIP = await getLocalBridgeIP();
-            exports.settings.status.connection = 'PAIRING WITH HUE BRIDGE';
+            exports.settings.status.connection = 'PRESS THE PAIR BUTTON ON THE HUE HUB';
             localBridgeIP = bridgeIP;
             exports.settings.localBridgeIP.value = localBridgeIP;
             settingsNeedUpdate = true;
@@ -348,7 +348,7 @@ if (exports.enabled) {
             username = settings('username');
         } else {
             username = await getUsername(localBridgeIP);
-            exports.settings.status.connection = 'PAIRED WITH HUE BRIDGE';
+            exports.settings.status.connection = 'PAIRED WITH HUE HUB';
             exports.settings.username.value = username;
             settingsNeedUpdate = true;
         }
