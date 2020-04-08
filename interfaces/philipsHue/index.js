@@ -29,6 +29,7 @@ let settings = server.loadHardwareInterface(__dirname);
 
 exports.enabled = settings('enabled');
 exports.configurable = true; // can be turned on/off/adjusted from the web frontend
+exports.settings = {};
 
 class Light {
     constructor(index, localBridgeIP, username) {
