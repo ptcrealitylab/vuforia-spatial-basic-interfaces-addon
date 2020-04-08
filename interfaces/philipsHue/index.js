@@ -77,7 +77,7 @@ async function getUsername(localBridgeIP) {
 async function getUsernameOnce(localBridgeIP) {
     const res = await fetch(`http://${localBridgeIP}/api`, {
         method: 'POST',
-        body: '{"devicetype":"VuforiaSpatialToolbox#PhilipsHueInterface"}',
+        body: '{"devicetype":"vst#PhilipsHueInterface"}',
     });
     const reply = await res.json();
 
