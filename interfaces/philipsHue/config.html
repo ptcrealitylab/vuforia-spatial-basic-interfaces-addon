@@ -255,13 +255,14 @@
         fetch(`/hardwareInterface/${realityServer.hardwareInterfaceName}/settings`).then(res => {
             return res.json();
         }).then(settings => {
+            setTimeout(fetchSettings, 2000);
+
             if (JSON.stringify(settings) === JSON.stringify(realityServer.hardwareInterface.settings)) {
                 return;
             }
 
             realityServer.hardwareInterface.settings = settings;
             realityServer.render();
-            setTimeout(fetchSettings, 1000);
         });
     }
 
