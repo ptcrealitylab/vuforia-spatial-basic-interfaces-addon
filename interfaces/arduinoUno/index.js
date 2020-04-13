@@ -53,11 +53,30 @@ if (exports.enabled) {
     exports.settings = {
         
     };
-    
+
+
+    var serialport ={}
+    try {
+         serialport = require("serialport");
+    } catch (err) {
+        console.clear();
+        console.log('\x1b[33mYou\'re not done with installing the basic this addon! You need to execute the following commands:');
+        console.log('\x1b[0m1.\x1b[32m cd addons/vuforia-spatial-basic-addon');
+        console.log('\x1b[0m2.\x1b[32m npm install', '\x1b[0m');
+
+        if (process.send) {
+            process.send('exit');
+        }
+
+        let keepRunning = true;
+        while (keepRunning) {
+            // Since process.send is async, just hold the server for preventing more errors
+        }
+    }
     
     var _ = require('lodash');
     
-    var serialport = require("serialport");
+ 
     
     const serialBaudRate = 115200; // baud rate for connection to arudino
 
