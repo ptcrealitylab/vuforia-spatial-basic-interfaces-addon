@@ -14,7 +14,7 @@ experiences with the Vuforia Spatial Toolbox and Vuforia Spatial Edge Server.
 
 ## Supported hardware
 
-- [Philips Hue](./interfaces/philipsHue)
+- [Philips Hue](/docs/vuforia-spatial-basic-interfaces-addon/interfaces/philipsHue)
 - Arduino: Documentation coming soon
 - LEGO WeDo: Documentation coming soon
 
