@@ -33,7 +33,7 @@ npm install
 
 ## Prerequisites (for compiling the dependencies)
 
-### OS X
+#### OS X
 
  * Install [Xcode](https://itunes.apple.com/ca/app/xcode/id497799835?mt=12)
  
