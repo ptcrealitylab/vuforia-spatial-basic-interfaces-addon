@@ -60,7 +60,7 @@ if (exports.enabled) {
          serialport = require("serialport");
     } catch (err) {
         console.clear();
-        console.log('\x1b[33mYour not done with installing the basic this addon! You need to execute the following commands:');
+        console.log('\x1b[33mYou\'re not done with installing the basic this addon! You need to execute the following commands:');
         console.log('\x1b[0m1.\x1b[32m cd addons/vuforia-spatial-basic-addon');
         console.log('\x1b[0m2.\x1b[32m npm install', '\x1b[0m');
 
