@@ -294,12 +294,12 @@
                 const status = this.templates.status.content.cloneNode(true);
                 status.querySelector('.connection').innerText = setting.connection;
                 const lights = status.querySelector('.lights');
-                if (setting.lights > 0) {
+                if (setting.lights.length > 0) {
                     lights.innerHTML = '';
                 }
-                for (let i = 0 ; i < setting.lights; i++) {
+                for (let lightId of setting.lights) {
                     const light = this.templates.light.content.cloneNode(true);
-                    light.querySelector('.name').innerText = `Light ${i + 1}`;
+                    light.querySelector('.name').innerText = lightId;
                     lights.appendChild(light);
                 }
                 this.domObjects.appendChild(status);

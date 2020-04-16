@@ -375,7 +375,7 @@ if (exports.enabled) {
 
         console.log('found lights', lights);
         exports.settings.status.connection = 'PAIRED WITH HUE BRIDGE';
-        exports.settings.status.lights = Object.keys(lights).length;
+        exports.settings.status.lights = Object.keys(lights);
 
         // Set up server-side frames, nodes, and listeners for all known lights
         for (var lightId in lights) {
