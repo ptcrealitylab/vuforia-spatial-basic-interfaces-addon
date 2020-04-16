@@ -127,7 +127,10 @@ async function getLocalLights(localBridgeIP, username) {
         let light =  new Light(lightId, localBridgeIP, username);
         lights[light.id] = light;
     }
-    return lights;
+    return {
+        lights,
+        lightInfo,
+    };
 }
 
 /**
@@ -371,11 +374,13 @@ if (exports.enabled) {
             });
         }
 
-        lights = await getLocalLights(localBridgeIP, username);
+        const lightResults = await getLocalLights(localBridgeIP, username);
+        lights = lightResults.lights;
+        const lightInfo = lightResults.lightInfo;
 
         console.log('found lights', lights);
         exports.settings.status.connection = 'PAIRED WITH HUE BRIDGE';
-        exports.settings.status.lights = Object.keys(lights);
+        exports.settings.status.lights = lightInfo;
 
         // Set up server-side frames, nodes, and listeners for all known lights
         for (var lightId in lights) {
