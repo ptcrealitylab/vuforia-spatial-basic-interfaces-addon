@@ -225,6 +225,7 @@
 <template id="light">
     <div class="name button green one">Light</div>
     <div style="display:inline-block"></div> <!-- graphic design is my passion -->
+    <div class="humanName button green three">Light</div>
 </template>
 
 <body>
@@ -294,12 +295,14 @@
                 const status = this.templates.status.content.cloneNode(true);
                 status.querySelector('.connection').innerText = setting.connection;
                 const lights = status.querySelector('.lights');
-                if (setting.lights > 0) {
+                if (Object.keys(setting.lights).length > 0) {
                     lights.innerHTML = '';
                 }
-                for (let i = 0 ; i < setting.lights; i++) {
+                for (let lightId in setting.lights) {
+                    const lightInfo = setting.lights[lightId];
                     const light = this.templates.light.content.cloneNode(true);
-                    light.querySelector('.name').innerText = `Light ${i + 1}`;
+                    light.querySelector('.name').innerText = 'Light' + lightId;
+                    light.querySelector('.humanName').innerText = lightInfo.name;
                     lights.appendChild(light);
                 }
                 this.domObjects.appendChild(status);
