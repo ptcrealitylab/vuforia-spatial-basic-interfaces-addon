@@ -383,23 +383,31 @@ if (exports.enabled) {
         exports.settings.status.lights = lightInfo;
 
         // Set up server-side frames, nodes, and listeners for all known lights
-        for (var lightId in lights) {
-            console.log('add lightId', lightId);
-            const frameId = lightId + 'frame';
-            server.addNode(lightId, frameId, 'switch', 'node');
-            server.addNode(lightId, frameId, 'brightness', 'node');
-            if (lights[lightId].colorful) {
-                server.addNode(lightId, frameId, 'hue', 'node');
-                server.addNode(lightId, frameId, 'saturation', 'node');
+        for (let lightId in lights) {
+            let lightName = lightId;
+            
+            if(lights[lightId].hasOwnProperty("name")){
+                if(lights[lightId].name) {
+                    lightName = lightId+"_"+lights[lightId].name;
+                }
             }
-            server.activate(lightId);
+            
+            console.log('add lightId', lightName);
+            const frameId = lightName + '_frame';
+            server.addNode(lightName, frameId, 'switch', 'node');
+            server.addNode(lightName, frameId, 'brightness', 'node');
+            if (lights[lightId].colorful) {
+                server.addNode(lightName, frameId, 'hue', 'node');
+                server.addNode(lightName, frameId, 'saturation', 'node');
+            }
+            server.activate(lightName);
 
-            server.addReadListener(lightId, frameId, 'switch', onRead(lightId, writeSwitchState));
-            server.addReadListener(lightId, frameId, 'brightness', onRead(lightId, writeBrightness));
+            server.addReadListener(lightName, frameId, 'switch', onRead(lightId, writeSwitchState));
+            server.addReadListener(lightName, frameId, 'brightness', onRead(lightId, writeBrightness));
 
             if (lights[lightId].colorful) {
-                server.addReadListener(lightId, frameId, 'hue', onRead(lightId, writeHue));
-                server.addReadListener(lightId, frameId, 'saturation', onRead(lightId, writeSaturation));
+                server.addReadListener(lightName, frameId, 'hue', onRead(lightId, writeHue));
+                server.addReadListener(lightName, frameId, 'saturation', onRead(lightId, writeSaturation));
             }
         }
     }
