@@ -393,7 +393,7 @@ if (exports.enabled) {
             }
             
             console.log('add lightId', lightName);
-            const frameId = lightName + '_frame';
+            const frameId = lightName + '_tool';
             server.addNode(lightName, frameId, 'switch', 'node');
             server.addNode(lightName, frameId, 'brightness', 'node');
             if (lights[lightId].colorful) {
