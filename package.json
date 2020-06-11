@@ -8,7 +8,7 @@
   "author": "Valentin Heun <heun@ptc.cpm>)",
   "license": "MPL 2.0",
   "dependencies": {
-    "serialport": "^8.0.7",
-    "wedoboostpoweredup": "^2.0.3"
+    "serialport": "^9.0.0",
+    "wedoboostpoweredup": "^2.1.4"
   }
 }
