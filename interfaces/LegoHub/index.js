@@ -178,7 +178,16 @@ if (exports.enabled) {
                 
                 hub.on('button', function (button, uuid) {
                     if (uuid in names) {
-                        server.write(names[uuid].name, TOOL_NAME, "button", button, "f");
+                        if(hub.wedoBoostPoweredUp[uuid].deviceType === "wedo") {
+
+                            server.write(names[uuid].name, TOOL_NAME, "button", button, "f");
+                        } else {
+                            if(button){
+                                server.write(names[uuid].name, TOOL_NAME, "button", 1.0, "f"); 
+                            } else {
+                                server.write(names[uuid].name, TOOL_NAME, "button", 0.0, "f");
+                            }
+                        }
                     }
                 }.bind(this));
             }
