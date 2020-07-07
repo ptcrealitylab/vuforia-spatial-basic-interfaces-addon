@@ -23,7 +23,7 @@
 const fetch = require('node-fetch');
 const http = require('http');
 
-const server = require('@libraries/hardwareInterfaces');
+const server = require('../../../../libraries/hardwareInterfaces');
 
 let settings = server.loadHardwareInterface(__dirname);
 
