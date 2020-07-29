@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mozilla WoT Gateway Configurator</title>
+    <style>
+        html {
+            background-color: rgb(34,34,34);
+            font-family: myriadPro, Helvetica Neue, Helvetica, Arial, sans-serif;;
+            font-size: 12pt;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            color: white;
+        }
+
+        #title {
+            color: rgb(45,255,255);
+            font-family: "Futura", Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-weight: medium;
+            font-size: 28pt;
+        }
+
+        #contents {
+            color: rgb(255,255,255);
+        }
+
+        .button {
+            padding: 0px;
+            margin: 0px;
+            width: 104px;
+            height: 32px;
+            line-height: 35px;
+            text-align: center;
+            vertical-align: middle;
+            border: 2px solid white;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .space {
+            padding: 0;
+            margin: 0;
+            width: 8px;
+            height: 36px;
+            line-height: 32px;
+            text-align: center;
+            vertical-align: middle;
+            margin-top: 10px;
+            display: inline-block;
+            color: rgb(255,255,255);
+            background-color: rgba(255,255,255,0.15);
+            z-index: -1;
+        }
+
+        .smallSpace {
+            width: 1px;
+            background-color: transparent;
+        }
+
+        .clickAble:hover {
+            opacity: 0.75;
+            cursor: pointer;
+        }
+
+        .green {
+            color: rgb(41,253,47);
+            border: 2px solid rgb(41,253,47);
+            background-color: rgba(41,253,47,0.05);
+        }
+
+        .red {
+            color: rgb(242,22,121);
+            border: 2px solid rgb(242,22,121);
+            background-color: rgba(242,22,121,0.05);
+        }
+
+        .blue {
+            color: rgb(45,255,255);
+            border: 2px solid rgb(45,255,255);
+            background-color: rgba(45,255,255,0.05);
+        }
+
+        .purple {
+            color: rgb(210,113,255);
+            border: 2px solid rgb(210,113,255);
+            background-color: rgba(210,113,255,0.05);
+        }
+
+        .yellow {
+            color: rgb(255,255,45);
+            border: 2px solid rgb(255,255,45);
+            background-color: rgba(255,255,45,0.05);
+        }
+
+        .hidden {
+            visibility: hidden;
+            color: rgba(255,255,255,0.0);;
+            background-color: rgba(255,255,255,0.0);
+        }
+
+        .white {
+            color: rgb(255,255,255);
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .zero {
+            margin-left: -12px;
+            width: 0;
+        }
+
+        .half {
+            width: 46px;
+        }
+
+        .halfPlus {
+            width: 49px;
+        }
+
+        .one {
+            width: 104px;
+        }
+
+        .two {
+            width: 220px;
+        }
+
+        .twoAndHalf {
+            width: 278px;
+        }
+
+        .three {
+            width: 336px;
+        }
+
+        .four {
+            width: 452px;
+        }
+
+        .fourAndHalf {
+            width: 514px;
+        }
+
+        .five {
+            width: 568px;
+        }
+
+        .fiveAndHalf {
+            width: 626px;
+        }
+
+        .textfield {
+            cursor: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            user-select: text;
+            font-family: myriadPro, Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 12pt;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .setting {
+            margin-bottom: 20px;
+        }
+
+        #introduction {
+            margin-bottom: -1px;
+        }
+
+        a {
+            color: rgba(45,255,255, 0.5);
+        }
+
+        .displayNone {
+            display: none;
+        }
+
+        .inactive {
+            opacity: 0.25;
+        }
+
+        .label {
+            display: inline-block;
+            line-height: 35px;
+            height: 35px;
+            vertical-align: middle;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<template id="setting">
+    <div class="">
+        <div class="helpText four">
+            Help text
+        </div>
+        <div class="setting">
+            <div class='name item button white two'>Setting Name</div>
+            <div class='space smallSpace'></div>
+            <div class='textfield value item button white two' contenteditable>Enter Name</div>
+            <br>
+            <div class="saveAndReset displayNone">
+                <div class='reset item button red one clickAble'>Reset</div>
+                <div class='space smallSpace'></div>
+                <div class='save item button green half clickAble'>Save</div>
+            </div>
+        </div>
+        <div class="appendix">
+            <div class="child"></div>
+        </div>
+    </div>
+</template>
+
+<template id="status">
+    <div class="setting">
+        <div class="connection button green four">SEARCHING FOR GATEWAY</div>
+        <div class="things">
+            <div class="name button yellow two inactive">No Things Found</div>
+        </div>
+    </div>
+</template>
+
+<template id="thing">
+    <div class="name button green one">thing</div>
+    <div style="display:inline-block"></div> <!-- graphic design is my passion -->
+    <div class="humanName button green three">thing</div>
+</template>
+
+<body>
+
+<div id="introduction">
+    If your gateway URL is missing please use this to manually configure your
+    interface with the necessary values. To add a token, visit your gateway's
+    Developer Settings page to issue a new local authorization.
+</div>
+
+<div id="contents">
+    <!--Contents get deleted and recreated in the realityServer.render()-->
+</div>
+
+<script>
+    var realityServer = {
+        myTargetDropzone : {},
+        dropZoneId : "",
+        states: {/*replace States*/},
+        hardwareInterfaceName: {/*replace HardwareInterfaceName*/},
+        hardwareInterface: {/*replace HardwareInterface*/},
+        domObjects: document.getElementById("contents"),
+        templates: document.getElementsByTagName("template")
+    }; // the objects and states get injected from the server webFrontend.js
+
+    var defaultSettings = null;
+
+    function fetchSettings() {
+        fetch(`/hardwareInterface/${realityServer.hardwareInterfaceName}/settings`).then(res => {
+            return res.json();
+        }).then(settings => {
+            setTimeout(fetchSettings, 2000);
+
+            if (JSON.stringify(settings) === JSON.stringify(realityServer.hardwareInterface.settings)) {
+                return;
+            }
+
+            realityServer.hardwareInterface.settings = settings;
+            realityServer.render();
+        });
+    }
+
+    window.onload = function() {
+        init();
+        fetchSettings();
+    };
+
+    function init() {
+        console.log(realityServer.hardwareInterface.settings);
+        defaultSettings = JSON.parse(JSON.stringify(realityServer.hardwareInterface.settings));
+
+        // document.getElementById('title').innerText = realityServer.hardwareInterfaceName + ' settings';
+        realityServer.render();
+    }
+
+    realityServer.render = function() {
+        var settings = this.hardwareInterface.settings;
+        if (typeof settings === "undefined") {
+            return;
+        }
+
+        console.log('render');
+        this.domObjects.innerHTML = ''; // reset
+
+        for (const settingsName in settings) {
+            const setting = settings[settingsName];
+            if (setting.type === 'status') {
+                const status = this.templates.status.content.cloneNode(true);
+                status.querySelector('.connection').innerText = setting.connection;
+                const things = status.querySelector('.things');
+                if (Object.keys(setting.things).length > 0) {
+                    things.innerHTML = '';
+                }
+                for (let thingId in setting.things) {
+                    const thingInfo = setting.things[thingId];
+                    const thing = this.templates.thing.content.cloneNode(true);
+                    thing.querySelector('.name').innerText = 'thing' + thingId;
+                    thing.querySelector('.humanName').innerText = thingInfo.name;
+                    things.appendChild(thing);
+                }
+                this.domObjects.appendChild(status);
+                continue;
+            }
+            const newElement = this.templates.setting.content.cloneNode(true);
+            newElement.querySelector('.name').innerText = settingsName;
+            newElement.querySelector('.value').innerText = setting.value;
+
+            if (typeof setting.helpText !== 'undefined') {
+                newElement.querySelector('.helpText').innerText = setting.helpText;
+            } else {
+                newElement.querySelector('.helpText').remove();
+            }
+
+            // implement value updated
+            newElement.querySelector('.value').addEventListener('input', function() {
+                console.log('value of ' + settingsName + ' changed to ' + this.innerText);
+
+                var didChange = false;
+                if (setting.type === 'text') {
+                    if (this.innerText !== setting.value) {
+                        console.log('new text value');
+                        didChange = true;
+                    }
+                }
+                if (setting.type === 'number') {
+                    if (parseFloat(this.innerText) !== setting.value) {
+                        console.log('new number value');
+                        didChange = true;
+                    }
+                }
+
+                if (didChange) {
+                    this.parentElement.querySelector('.saveAndReset').classList.remove('displayNone');
+                } else {
+                    this.parentElement.querySelector('.saveAndReset').classList.add('displayNone');
+                }
+
+            });
+
+            // implement reset button
+            newElement.querySelector('.reset').addEventListener('click', function() {
+                realityServer.hardwareInterface.settings[settingsName].value = defaultSettings[settingsName].value;
+                realityServer.render();
+            });
+
+            // implement save button
+            newElement.querySelector('.save').addEventListener('click', function() {
+                if (setting.type === 'text') {
+                    setting.value = this.parentElement.parentElement.querySelector('.value').innerText;
+                } else if (setting.type === 'number') {
+                    setting.value = parseFloat(this.parentElement.parentElement.querySelector('.value').innerText);
+                }
+                console.log('new settings for ' + settingsName + ' = ' + setting.value);
+                console.log('TODO: write settings to file');
+
+                realityServer.writeHardwareInterfaceSettings(settings, [settingsName] ,function(res) {
+                    console.log('got response... re-render');
+                    realityServer.render();
+                });
+            });
+
+            realityServer.domObjects.appendChild(newElement);
+        }
+    };
+
+    realityServer.writeHardwareInterfaceSettings = function(settings, limitToKeys, callback) {
+        var body = {
+            settings: settings,
+        };
+        if (limitToKeys) {
+            body.limitToKeys = limitToKeys;
+        }
+        realityServer.sendRequest('/hardwareInterface/' + realityServer.hardwareInterfaceName + '/settings/', 'POST', function (state) {
+            if (state === 'ok') {
+                console.log('successfully wrote settings')
+            }
+            callback(state);
+        }, JSON.stringify(body));
+    };
+
+    realityServer.sendRequest = function(url, httpStyle, callback, body) {
+        if (!body) { body = ""; }
+        var req = new XMLHttpRequest();
+        try {
+            req.open(httpStyle, url, true);
+            if(httpStyle === "POST"){
+                req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            }
+            // Just like regular ol' XHR
+            req.onreadystatechange = function () {
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        // JSON.parse(req.responseText) etc.
+                        if(req.responseText)
+                            callback(req.responseText);
+                    } else {
+                        // Handle error case
+                        callback("err");
+                        console.log("could not load content");
+                    }
+                }
+            };
+            if(httpStyle === "POST"){
+                req.send(body);
+            } else {
+                req.send();
+            }
+
+        }
+        catch (e) {
+            callback("err");
+            console.log("could not connect to" + url);
+        }
+    };
+
+</script>
+
+</body>
+</html>
