@@ -223,9 +223,9 @@
 </template>
 
 <template id="thing">
-    <div class="name button green one">thing</div>
+    <div class="name button green two">thing</div>
     <div style="display:inline-block"></div> <!-- graphic design is my passion -->
-    <div class="humanName button green three">thing</div>
+    <div class="humanName button green two">thing</div>
 </template>
 
 <body>
@@ -302,8 +302,8 @@
                 for (let thingId in setting.things) {
                     const thingInfo = setting.things[thingId];
                     const thing = this.templates.thing.content.cloneNode(true);
-                    thing.querySelector('.name').innerText = 'thing' + thingId;
-                    thing.querySelector('.humanName').innerText = thingInfo.name;
+                    thing.querySelector('.name').innerText = thingId;
+                    thing.querySelector('.humanName').innerText = thingInfo.title;
                     things.appendChild(thing);
                 }
                 this.domObjects.appendChild(status);
