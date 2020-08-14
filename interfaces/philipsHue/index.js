@@ -124,7 +124,7 @@ async function getLocalLights(localBridgeIP, username) {
     const lightInfo = await res.json();
     const lights = {};
     for (let lightId in lightInfo) {
-        let light =  new Light(lightId, localBridgeIP, username);
+        let light = new Light(lightId, localBridgeIP, username);
         lights[light.id] = light;
     }
     return {
