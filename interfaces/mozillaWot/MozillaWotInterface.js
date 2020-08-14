@@ -33,7 +33,7 @@ module.exports = class MozillaWotInterface {
             this.gatewayUrl = this.settings('gatewayUrl');
         } else {
             const gatewayUrl = await this.discoverLocalGatewayUrl();
-            this.exportedSettings.status.connection = 'RETRIEVE A TOKEN IDK';
+            this.exportedSettings.status.connection = 'RETRIEVE A TOKEN';
             this.gatewayUrl = gatewayUrl;
             this.exportedSettings.gatewayUrl.value = this.gatewayUrl;
             await this.persistSettings();
@@ -42,7 +42,8 @@ module.exports = class MozillaWotInterface {
         if (this.settings('token')) {
             this.token = this.settings('token');
         } else {
-            exports.settings.status.connection = 'PLEASE TOKEN PLEASE';
+            this.exportedSettings.status.connection = 'RETRIEVE A TOKEN';
+            await this.persistSettings();
         }
 
     }
@@ -70,6 +71,13 @@ module.exports = class MozillaWotInterface {
     }
 
     async discoverThings() {
+        if (!this.gatewayUrl || !this.token) {
+            console.warn('Pairing incomplete');
+            return;
+        }
+        this.exportedSettings.status.connection = 'CONNECTED';
+        await this.persistSettings();
+
         const res = await fetch(`${this.gatewayUrl}/things`, {headers: this.getHeaders()});
         const things = await res.json();
         if (!things || !things.length) {
@@ -95,7 +103,12 @@ module.exports = class MozillaWotInterface {
                     thingId, frameId, propertyId,
                     this.onRead(`${this.gatewayUrl}${propertyLink}`, propertyId, property.type === 'boolean'));
             }
+            this.exportedSettings.status.things[thingId] = {
+                id: thingId,
+                title: thing.title,
+            };
         }
+        await this.persistSettings();
     }
 
     getHeaders() {
