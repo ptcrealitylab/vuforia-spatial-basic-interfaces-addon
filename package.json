@@ -9,6 +9,6 @@
   "license": "MPL 2.0",
   "dependencies": {
     "serialport": "^9.0.0",
-    "wedoboostpoweredup": "^2.1.7"
+    "wedoboostpoweredup": "^2.1.9"
   }
 }
