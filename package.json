@@ -10,5 +10,8 @@
   "dependencies": {
     "serialport": "^9.0.0",
     "wedoboostpoweredup": "^2.1.9"
+  },
+  "devDependencies": {
+    "eslint": "^7.12.1"
   }
 }
